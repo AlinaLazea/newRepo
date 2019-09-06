@@ -1,5 +1,5 @@
 // login.page.js
-import Page from "./pageobject/page.js"
+import Page from "./page.js"
 
 class LoginPage extends Page {
     get username() { return $('//*[@type="text" and @name="username"]'); }

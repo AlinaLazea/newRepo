@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:wdio": "wdio wdio.conf.js --spec bayutSearch.test.js"
+    "test:wdio": "wdio wdio.conf.js --spec bayutSearchFor3BedsRooms.test.js"
   },
   "keywords": [],
   "author": "",
@@ -24,5 +24,8 @@
     "wdio-spec-reporter": "^0.1.5",
     "wdio-sync": "^0.7.3",
     "webdriverio": "^4.14.0"
+  },
+  "dependencies": {
+    "webdriverio-explicit-waits": "^1.0.2"
   }
 }

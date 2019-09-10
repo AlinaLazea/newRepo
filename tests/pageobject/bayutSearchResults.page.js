@@ -1,4 +1,5 @@
 import Page from "./page.js"
+import Assert from 'assert';
 
 class Results extends Page{
     get sTotalResults(){
@@ -7,7 +8,13 @@ class Results extends Page{
 
     get nTotalResults(){
         if(!this.errorMessage.isExisting()){
-            return parseInt($("//*[@aria-label = 'Summary text']").getText().toString().split("of ")[1].split(" Prop")[0]);
+            return parseInt($("//span[@aria-label = 'Summary text']").getText().toString().split("of ")[1].split(" Prop")[0]);
+        }
+    }
+
+    get nShowingResults(){
+        if(!this.errorMessage.isExisting()){
+            return parseInt($("//span[@aria-label = 'Summary text']").getText().toString().split(" - ")[1].split(" of")[0]);
         }
     }
 
@@ -15,18 +22,22 @@ class Results extends Page{
         return $("//*[@aria-label = 'Error message']")
     }
 
+    get pageItemsLi(){
+        return $("//*[@aria-label = 'Search results header']");
+    }
     
-    getThePageItems(resultsObj){
+    getThePageItems(resultsObj, bedsOpt){
         const pageItems = $("//*[@aria-label = 'Search results header']/following-sibling::ul").$$("li");
-        console.log("items/ page: ", pageItems.length)
+        //console.log("items/ page: ", pageItems.length)
         var itemName, itemBeds;
         for (var index = 0; index < pageItems.length; index++) {
             //console.log(pageItems[index].getAttribute('role'))
             if (pageItems[index].getAttribute('role') === "article") {
                 var newIndex = index+ 1
-                var itemName = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]//*[@aria-label = 'Listing location']").getText()
+                //this.waitUntilIsDisplayed(pageItems)
 
-                var itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Beds']").getText()
+                itemName = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]//*[@aria-label = 'Listing title']").getText()
+                bedsOpt == "Studio" ? itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Studio']").getText() : itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Beds']").getText()
                 
                 resultsObj[itemName] = itemBeds;
             }
@@ -38,38 +49,34 @@ class Results extends Page{
         return $("//div[@title = 'Next']")
     }
 
-    only3BedsProperties(resultsObject){
-        var errorsArray = []
+    notificationPopup(){
+        const maybeLaterBtn = $("//button[text() = 'Maybe Later']")
 
-        for(var key in resultsObject){
-            if(parseInt(resultsObject[key]) !== 3){
-                errorArray.push(key)
-            }
+        if(maybeLaterBtn.isExisting()){
+            maybeLaterBtn.click()
         }
-        errorsArray.length !== 0 ? new Error("Apartments with more/less than 3 beds: " , errorArray) : console.log("Only 3 beds apartments available!")
+        //maybeLaterBtn.isExisting() ? maybeLaterBtn.click() : console.log("The notification popup is not displayed!")
     }
 
+    verifyBedsOption(resultsObject, bedsOpt){
+        var errorsArray = []
+        var result
 
+        for(var key in resultsObject){
+            if(resultsObject[key].toString() !== bedsOpt.toString()){
+                errorsArray.push(key)
+            }
+        }
+        errorsArray.length !== 0 ? result = false : result = true;
+        
+        var errorMsg = "Apartments with invalid number of beds (expected: "+ bedsOpt +"): " + JSON.stringify(errorsArray)
+        Assert(result, errorMsg)
 
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    waitUntilIsDisplayed(element){
+        super.waitUntilIsDisplayed(element)
+    }
 
 
 }

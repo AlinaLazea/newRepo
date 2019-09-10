@@ -1,6 +1,7 @@
 import Page from "./page.js"
 const { waitFor, ExpectedConditions } = require('webdriverio-explicit-waits')
 const EC = ExpectedConditions
+import Assert from 'assert';
 
 class Filters extends Page{
     get eFindBtn(){ 
@@ -8,7 +9,7 @@ class Filters extends Page{
     }
 
     get eLocationInput(){
-        return $("//*[@aria-label = 'Location input']")
+        return $("//input[@type = 'text']")
     }
 
     get eBeds() {
@@ -33,23 +34,7 @@ class Filters extends Page{
         }
     }
 
-    convertSelectorToElement(element) {
-        if (typeof element === 'string') {
-            browser.waitForVisible(element);
-            element = $(element);
-        }
-        return element;
-    }
-
-    clickElement(element) {
-        element = this.convertSelectorToElement(element);
-        element.waitForVisible(browser.options.waitForElement);
-        element.click();
-    }
-
     chooseBedOption(selectedBedOption){
-        console.log("drop down: " , this.dropDownList.length )
-        console.log("drop down1: " , this.dropDownList1.length )
         var bedsOpt = this.selectBeds(this.dropDownList, selectedBedOption)
         bedsOpt.click()
     }
@@ -66,7 +51,31 @@ class Filters extends Page{
     }
 
     open() {
-        super.open('https://www.bayut.com/');
+        super.open('https://sl:getin1@bayut-development.herokuapp.com/');
+    }
+
+    waitUntilIsDisplayed(element){
+        super.waitUntilIsDisplayed(element)
+    }
+
+    waitForElementAndClick(element){
+        this.waitUntilIsDisplayed(element);
+        element.click()
+    }
+
+    verifyTheLocationInput(desiredLocation){
+        const filledLocationField = $("//li[@aria-label = 'Active filter label']/child::span").getText()
+        Assert.equal(filledLocationField, desiredLocation, "Incorrect location text. Expected: " + desiredLocation + " /Received: " + filledLocationField)
+    }
+
+    verifyTheSelectedNumberOfBeds(bedsOption){
+        const nrOfBeds = $("//*[@aria-label = 'Beds filter']/child::div/child::div/child::span/child::span").getText()
+        Assert.equal(nrOfBeds, bedsOption, "Invalid number of beds. Expected: " + bedsOption + " /Received: " + nrOfBeds)
+    }
+
+    verifyThatFindBtnWasPressed(){
+        var nextPage = $("//*[@aria-label = 'Search results header']")
+        Assert(nextPage !== undefined)
     }
 }
 

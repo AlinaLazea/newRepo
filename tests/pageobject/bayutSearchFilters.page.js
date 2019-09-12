@@ -64,7 +64,7 @@ class Filters extends Page{
     }
 
     verifyTheLocationInput(desiredLocation){
-        const filledLocationField = $("//li[@aria-label = 'Active filter label']/child::span").getText()
+        const filledLocationField = $("//*[@aria-label = 'Active filter label']/child::span").getText()
         Assert.equal(filledLocationField, desiredLocation, "Incorrect location text. Expected: " + desiredLocation + " /Received: " + filledLocationField)
     }
 
@@ -80,3 +80,4 @@ class Filters extends Page{
 }
 
 export default new Filters();
+

@@ -1,6 +1,6 @@
 // login.spec.js
 import { expect } from 'chai';
-import LoginPage from './pageobject/login.page.js';
+import LoginPage from '../pageobject/login.page.js';
 
 describe('login form', () => {
     it('should deny access with wrong creds', () => {

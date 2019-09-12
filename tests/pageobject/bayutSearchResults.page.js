@@ -27,18 +27,57 @@ class Results extends Page{
     get pageItemsLi(){
         return $("//*[@aria-label = 'Search results header']");
     }
+
+    get beds(){
+
+    }
+
+    get ad(){
+        return $("//*[@role = 'article']")
+    }
+
+    get adTitle(){
+        return $("//*[@aria-label='Listing title']")
+    }
+
+    getTheAdTitle(index){
+        var adTitle = `${this.ad.selector}[${index}]${this.adTitle.selector}`
+        return $(adTitle)
+    }
+
+    getTheItems(resultsObj, bedsOpt){
+        const pageItems = $(`${this.pageItemsLi.selector}/following-sibling::ul`).$$("li");
+        console.log(pageItems.length)
+        var itemName
+        for(var i=0; i < pageItems.length; i++){
+            itemName = pageItems[i]
+            if(pageItems[i].getAttribute("role").selector !== null){
+                var i = i+1
+                itemName = this.getTheAdTitle(i).getText()
+                bedOption = `${this.ad.selector}//*[@aria-label = 'Studio']`.selector.getText() 
+                console.log("item name: ", itemName, "  beds: ", bedOption)
+                resultsObj[itemName] = bedOption
+            }
+            
+                
+            
+        }
+        //console.log("obj length: ", resultsObj)
+    }
     
     getThePageItems(resultsObj, bedsOpt){
         const pageItems = $("//*[@aria-label = 'Search results header']/following-sibling::ul").$$("li");
-        //console.log("items/ page: ", pageItems.length)
+        console.log("items/ page: ", pageItems.length)
         var itemName, itemBeds;
         for (var index = 0; index < pageItems.length; index++) {
-            //console.log(pageItems[index].getAttribute('role'))
+            console.log(pageItems[index].getAttribute('role'))
             if (pageItems[index].getAttribute('role') === "article") {
                 var newIndex = index+ 1
                 //this.waitUntilIsDisplayed(pageItems)
-
-                itemName = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]//*[@aria-label = 'Listing title']").getText()
+                console.log(newIndex)
+                itemName = this.getTheAdTitle(newIndex)
+                //console.log(itemName)
+                //itemName = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]//*[@aria-label = 'Listing title']").getText()
                 bedsOpt == "Studio" ? itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Studio']").getText() : itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Beds']").getText()
                 
                 resultsObj[itemName] = itemBeds;

@@ -1,9 +1,9 @@
-import Filters from "./pageobject/bayutSearchFilters.page.js"
-import Results from "./pageobject/bayutSearchResults.page.js"
+import Filters from "../pageobject/bayutSearchFilters.page.js"
+import Results from "../pageobject/bayutSearchResults.page.js"
 require('mocha-steps')
 
 //
-const bedsOptionArr = ["Studio", 1, 2, 3, 4, 5, 6, 7, "8+"]
+const bedsOptionArr = ["Studio" /*, 1, 2, 3, 4, 5, 6, 7, "8+" */]
 const desiredLocation = "Dubai Marina"
 const startDate = new Date().getTime()
 
@@ -62,7 +62,8 @@ bedsOptionArr.forEach(bedOption => {
                     counter++
                     const showingResults = parseInt(Results.nShowingResults);
 
-                    Results.getThePageItems(object, bedOption);
+                    Filters.waitUntilIsDisplayed(Results.ad)
+                    Results.getTheItems(object, bedOption);
 
                     if (totalResults !== showingResults) {
                         Filters.waitForElementAndClick(Results.eNextPage)
@@ -70,7 +71,7 @@ bedsOptionArr.forEach(bedOption => {
                     }
 
                     if (totalResults == showingResults) {
-                        Results.getThePageItems(object, bedOption);
+                        Results.getTheItems(object, bedOption);
                         break;
                     }
                 } while (totalResults !== showingResults)

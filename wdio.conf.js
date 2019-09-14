@@ -133,9 +133,11 @@ exports.config = {
     // See the full list at http://mochajs.org/
     mochaOpts: {
         ui: 'bdd',
-        timeout: 9999999,
-        retries:0,
+        timeout: 180000,
+        retries:2,
+        require: 'mocha-steps',
         showInExplorer:true,
+        compilers: ['js:babel-register']
     },
     //
     // =====

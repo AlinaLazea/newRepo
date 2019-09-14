@@ -1,5 +1,3 @@
-//const assert = require("assert");
-
 import assert from "assert";
 
 describe("Test home page", () => {

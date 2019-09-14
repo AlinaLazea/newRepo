@@ -1,41 +1,20 @@
 import Page from "./page.js"
 
-class xPathFilters extends Page{
-    //element, type object, methods getText, etc
-    /**
-     * out: value: 
-        { ELEMENT: '0.6471768287987443-1',
-            'element-6066-11e4-a52e-4f735466cecf': '0.6471768287987443-1' },
-            selector: '//a[contains(@title, "Bayut.com")]',
-            _status: 0 
-        } */
-
+class SearchPageFilters extends Page{
     get eBayutLogo(){
         return $(`//*[contains(@title, "Bayut.com")]`)
     }
 
-
-    // selector type string
-    /**
-     * out: //a[contains(@title, "Bayut.com")
-     */
     get selectorBayutLogo(){
-        return $(`//a[contains(@title, "Bayut.com")]`).selector
+        return $(`//a[contains(@title, "Bayut.com")]`)
     }
 
-    //element type function
-    /**
-     * out; function () { [native code] }
-     */
     get elementFunctionBayutLogo(){
-        return $(`//a[contains(@title, "Bayut.com")]`).element
+        return $(`//a[contains(@title, "Bayut.com")]`)
     }
 
-//-------------------------------------------------------------------------------------------------
-
-    // get the buy btn
     get ebuyBtn(){
-        return $(`${this.eBayutLogo.selector}/following-sibling::div/span[1]`)
+        return $('//*[text() = "Buy"]')
     }
 
     get eRentBtn(){
@@ -114,14 +93,6 @@ class xPathFilters extends Page{
         return $('//*[@aria-label = "Agency input"]')
     }
 
-/*     get eBuyActiveFilters(){
-        return $('//*[@aria-label = "Header links dropdown"]//descendant::a')
-    }
-
-    setBuyOption(buyOptionIndex){
-        return $(`${this.eBuyActiveFilters.selector}[${buyOptionIndex}]`).click()
-    } */
-
     get erentOptionBtn(){
         return $('//*[@aria-label = "Rent"]')
     }
@@ -138,7 +109,6 @@ class xPathFilters extends Page{
         return $(`${this.ePropertyTypeList.selector}//*[text() = "Commercial"]`)
     }
 
-    // text - property type name: shop, apartment, etc
     setPropertyType(text){
         return $(`${this.ePropertyTypeList.selector}//*[contains(text(),"${text}")]`).click()
     }
@@ -147,55 +117,128 @@ class xPathFilters extends Page{
         return $(`//*[@aria-label = "${rentFreq}"]`).click()
     }
 
-    get eMinPriceValueInput(){
+    get eMinValueInput(){
         return $(`//*[@placeholder = "0"]`)
     }
 
-    get eMaxPriceValue(){
+    get eMaxValueInput(){
         return $(`//*[@placeholder = "Any"]`)
     }
 
-    setBedOption(bedOption){
+    setDropDownListOption(bedOption){
         return $(`//*[@role = "listbox"]//*[@aria-label = "${bedOption}"]`).click()
     }
 
+    get eSortOptionBtn(){
+        return $(`//*[@aria-label = "Sort by filter"]`)
+    }
 
+    sortBy(sortOption){
+        return $(`//*[@role = "listbox"]//*[@value = "${sortOption}"]`)
+    }
 
+    get eSaveSearchBtn(){
+        return $('//*[@aria-label = "Save search button"]')
+    }
 
+    get eGridBtn(){
+        return $('//*[@aria-label = "Search results header"]//span[@role = "button"][2]')
+    }
 
+    get eCallBtn(){
+        return $('//*[@aria-label = "Call"]')
+    }
 
+    get eEmailBtn(){
+        return $('//*[@aria-label = "Email"]')
+    }
 
+    get eAgencylogo(){
+        return $('//*[@aria-label = "Listing agency photo"]')
+    }
 
+    get eAdBeds(){
+        return $('//*[@aria-label = "Beds"]')
+    }
 
+    get eAdBaths(){
+        return $('//*[@aria-label = "Baths"]')
+    }
 
+    get eAdLocation(){
+        return $('//*[@aria-label = "Listing location"]')
+    }
 
+    get eAdTitle(){
+        return $('//*[@aria-label = "Listing title"]')
+    }
 
+    get eAdListedCategory(){
+        return $('//*[@aria-label = "Listing category"]')
+    }
 
+    get eAdListedCurrency(){
+        return $('//*[@aria-label = "Listing currency"]')
+    }
 
+    get eAdListedPrice(){
+        return $('//*[@aria-label = "Listing price"]')
+    }
 
+    get eAdListedFrequency(){
+        return $('//*[@aria-label = "Listing frequency"]')
+    }
 
+    get eAdSurface(){
+        return $('//*[@aria-label = "Area"]/span')
+    }
 
+    get ePromo(){
+        return $('//*[@class = "callToAction"]')
+    }
 
+    get eActiveFilters(){
+        $('//*[@aria-label = "Active filter label"]')
+    }
 
+    get eClearAllFilters(){
+        return $('//*[@role = "listbox"]//*[contains(text(), "Reset")]')
+    }
 
+    get eNextBtn(){
+        return $('//div[@title = "Next"]')
+    }
 
+    get eNewPropAlert(){
+        return $('//*[@aria-label = "Alert properties button"]')
+    }
 
+    get eSearchLinks(){
+        return $('//*[@aria-label = "Search links"]')
+    }
 
+    get eAboutUs(){
+        return $('//*[@title = "ABOUT US"]')
+    }
 
+    get eContactUs(){
+        return $('//*[@title = "CONTACT US]')
+    }
 
+    get eTermsNPrivacyPolicy(){
+        return $('//*[@title = "TERMS & PRIVACY POLICY"]')
+    }
 
+    get eITunes(){
+        return $('//*[@title = "Open ITunes to Download and Install this App"]/div')
+    }
 
-
-
-
-
-
-
+    get eGooglePlay(){
+        return $('//*[@title = "Open Google Play to Download and Install this App"]/div')
+    }
 
     open(){
         super.open('https://sl:getin1@bayut-development.herokuapp.com/to-rent/property/uae/')
     }
-
-
 }
-export default new xPathFilters()
+export default new SearchPageFilters()

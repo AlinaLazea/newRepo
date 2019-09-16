@@ -13,41 +13,11 @@ class Filters extends Page{
     }
 
     get eBeds() {
-        return $("//*[@aria-label = 'Beds filter']") //type ELEMENT
+        return $("//*[@aria-label = 'Beds filter']")
     }
 
-    get dropDownList(){
-        return $("//*[@aria-label = 'Beds filter']/child::div/child::div[2]/child::div/child::div[1]/child::div").$$(`span`)
-    }
-
-    get dropDownList1(){
-        const eBedsChildDivElement =  this.eBeds.element('div');
-        eBedsChildDivElement.waitForExist(200);
-        const optionsDiv = eBedsChildDivElement.$$('div');
-
-        for (var index = 0; index < optionsDiv.length; index++) {
-            if (optionsDiv[index].getAttribute('role') === 'listbox') {
-                // we found the listbox
-                const bedOptions = optionsDiv[index].$$(`span`);
-                return bedOptions
-            }
-        }
-    }
-
-    chooseBedOption(selectedBedOption){
-        var bedsOpt = this.selectBeds(this.dropDownList, selectedBedOption)
-        bedsOpt.click()
-    }
-
-    selectBeds(list, selectedBedOption){
-        const bedOptions = list;
-        for (var optionIndex = 0; optionIndex < bedOptions.length; optionIndex ++) {
-            const bedOptionsItem = bedOptions[optionIndex];
-            if (bedOptionsItem.getText() == selectedBedOption) {
-                //console.log('Found the bed option with value equal to ', selectedBedOption);
-                return bedOptionsItem
-            }
-        }
+    setDropDownListOption(bedOption){
+        return $(`//*[@role = "listbox"]//*[@aria-label = "${bedOption}"]`).click()
     }
 
     open() {
@@ -64,12 +34,12 @@ class Filters extends Page{
     }
 
     verifyTheLocationInput(desiredLocation){
-        const filledLocationField = $("//li[@aria-label = 'Active filter label']/child::span").getText()
+        const filledLocationField = $("//*[@aria-label = 'Active filter label']/child::span").getText()
         Assert.equal(filledLocationField, desiredLocation, "Incorrect location text. Expected: " + desiredLocation + " /Received: " + filledLocationField)
     }
 
     verifyTheSelectedNumberOfBeds(bedsOption){
-        const nrOfBeds = $("//*[@aria-label = 'Beds filter']/child::div/child::div/child::span/child::span").getText()
+        const nrOfBeds = $(`${this.eBeds.selector}//*[@class = "fontCompensation"]`).getText()
         Assert.equal(nrOfBeds, bedsOption, "Invalid number of beds. Expected: " + bedsOption + " /Received: " + nrOfBeds)
     }
 
@@ -80,3 +50,4 @@ class Filters extends Page{
 }
 
 export default new Filters();
+

@@ -4,20 +4,17 @@ import Assert from 'assert';
 class Results extends Page{
     get sTotalResults(){
         if(!this.errorMessage.isExisting()){
+            this.waitUntilIsDisplayed($("//*[@aria-label = 'Summary text']"))
             return $("//*[@aria-label = 'Summary text']")
         }else return undefined;
     }
 
     get nTotalResults(){
-        if(!this.errorMessage.isExisting()){
-            return parseInt($("//span[@aria-label = 'Summary text']").getText().toString().split("of ")[1].split(" Prop")[0]);
-        }
+        return parseInt($(`${this.sTotalResults.selector}`).getText().toString().split("of ")[1].split(" Prop")[0]);
     }
 
     get nShowingResults(){
-        if(!this.errorMessage.isExisting()){
-            return parseInt($("//span[@aria-label = 'Summary text']").getText().toString().split(" - ")[1].split(" of")[0]);
-        }
+        return parseInt($(`${this.sTotalResults.selector}`).getText().toString().split(" - ")[1].split(" of")[0]);
     }
 
     get errorMessage(){
@@ -27,42 +24,95 @@ class Results extends Page{
     get pageItemsLi(){
         return $("//*[@aria-label = 'Search results header']");
     }
-    
-    getThePageItems(resultsObj, bedsOpt){
-        const pageItems = $("//*[@aria-label = 'Search results header']/following-sibling::ul").$$("li");
-        //console.log("items/ page: ", pageItems.length)
-        var itemName, itemBeds;
-        for (var index = 0; index < pageItems.length; index++) {
-            //console.log(pageItems[index].getAttribute('role'))
-            if (pageItems[index].getAttribute('role') === "article") {
-                var newIndex = index+ 1
-                //this.waitUntilIsDisplayed(pageItems)
 
-                itemName = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]//*[@aria-label = 'Listing title']").getText()
-                bedsOpt == "Studio" ? itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Studio']").getText() : itemBeds = $("//*[@aria-label = 'Search results header']/following-sibling::ul/child::li["+ newIndex + "]/child::article/child::div[3]/child::div[3]/child::div[3]/div/span[1]//*[@aria-label = 'Beds']").getText()
-                
-                resultsObj[itemName] = itemBeds;
-            }
-        }
-        //console.log("items/ page obj: ", JSON.stringify(oPageItems))
+    get eAdBeds(){
+        return $('//*[@aria-label = "Beds"]')
+    }
+
+    get eAdStudio(){
+        return $('//*[@aria-label = "Studio"]')
+    }
+
+    get ad(){
+        return $("//*[@role = 'article']")
+    }
+
+    get adTitle(){
+        return $("//*[@aria-label='Listing title']")
+    }
+
+    get allAds(){
+        return $('//*[@aria-label = "Search results header"]//following-sibling::ul').$$("article")
     }
 
     get eNextPage(){
         return $("//div[@title = 'Next']")
     }
 
-    notificationPopup(){
-        const maybeLaterBtn = $("//button[text() = 'Maybe Later']")
+    getAllAds(resultsObj, bedOption){
+        var studioOpt;
+        bedOption == "Studio" ? studioOpt = true : studioOpt = false;
+        var pageCounter = 0
+        var totalResults = this.nTotalResults;
 
+        if(!this.errorMessage.isExisting()){
+            do {
+                pageCounter++
+                console.log("Page: ", pageCounter)
+                
+                this.waitUntilIsDisplayed(this.pageItemsLi)
+                this.getAds(resultsObj, studioOpt)
+    
+                if(totalResults !== this.nShowingResults){
+                    this.notificationPopup()
+                    this.waitForElementAndClick(this.eNextPage)
+                }
+    
+                if(totalResults == this.nShowingResults){
+                    this.getAds(resultsObj, studioOpt)
+                    console.log("showingResults: ", this.nShowingResults, "   |   totalResults: ", totalResults, "   Page: ", pageCounter)
+                }
+            } while (totalResults !== this.nShowingResults);
+        }
+    }
+
+    getTheAdTitle(index){
+        var adTitle = $(`${this.ad.selector}[${index}]${this.adTitle.selector}`)
+        if(adTitle.isExisting()){
+            return adTitle.getText()
+        }
+    }
+
+    getTheAdBeds(index, studio){
+        var bedOpt;
+        studio ? bedOpt = this.eAdStudio.selector : bedOpt = this.eAdBeds.selector;
+
+        var adBeds = $(`${this.ad.selector}[${index}]${bedOpt}`)
+        if(adBeds.isExisting()){
+            return adBeds.getText()
+        }
+    }
+
+    getAds(resultsObj, studio){
+        var adName, bedsOption;
+        for(var i=1; i< this.allAds.length + 1; i++){
+            adName = this.getTheAdTitle(i);
+            bedsOption = this.getTheAdBeds(i, studio)
+
+            resultsObj[adName] = bedsOption
+        }
+    }
+
+    notificationPopup(){
+        const maybeLaterBtn = $("//*[text() = 'Maybe Later']")
         if(maybeLaterBtn.isExisting()){
             maybeLaterBtn.click()
         }
-        //maybeLaterBtn.isExisting() ? maybeLaterBtn.click() : console.log("The notification popup is not displayed!")
     }
 
     verifyBedsOption(resultsObject, bedsOpt){
         var errorsArray = []
-        var result
+        var result;
 
         for(var key in resultsObject){
             if(resultsObject[key].toString() !== bedsOpt.toString()){
@@ -73,7 +123,11 @@ class Results extends Page{
         
         var errorMsg = "Apartments with invalid number of beds (expected: "+ bedsOpt +"): " + JSON.stringify(errorsArray)
         Assert(result, errorMsg)
+    }
 
+    waitForElementAndClick(element){
+        this.waitUntilIsDisplayed(element);
+        element.click()
     }
 
     waitUntilIsDisplayed(element){
@@ -96,6 +150,5 @@ class Results extends Page{
             seconds: seconds
         };
     }
-
 }
 export default new Results();

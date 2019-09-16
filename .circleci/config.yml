@@ -12,17 +12,9 @@ jobs:
     steps:
       - checkout
       - run: npm install
-
-  test:
-    docker:
-      - image: circleci/node:8.16.0
-    steps:
-      - checkout
-      - run: npm test
-
+      - run: npm test:wdio
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-      - test

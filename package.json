@@ -24,8 +24,6 @@
     "wdio-selenium-standalone-service": "0.0.11",
     "wdio-spec-reporter": "^0.1.5",
     "wdio-sync": "^0.7.3",
-    "braces": "2.3.1",
-    "mem": "4.0.0",
     "webdriverio": "^4.14.0"
   },
   

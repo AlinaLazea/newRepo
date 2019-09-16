@@ -1,6 +1,4 @@
 import Page from "./page.js"
-const { waitFor, ExpectedConditions } = require('webdriverio-explicit-waits')
-const EC = ExpectedConditions
 import Assert from 'assert';
 
 class Filters extends Page{

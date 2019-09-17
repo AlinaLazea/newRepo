@@ -1,3 +1,20 @@
+var path = require('path');
+var VisualRegressionCompare = require('wdio-visual-regression-service/compare');
+
+function getScreenshotName(basePath) {
+  return function(context) {
+    var type = context.type;
+    var testName = context.test.title;
+    var browserVersion = parseInt(context.browser.version, 10);
+    var browserName = context.browser.name;
+    var browserViewport = context.meta.viewport;
+    var browserWidth = browserViewport.width;
+    var browserHeight = browserViewport.height;
+
+    return path.join(basePath, `${testName}_${type}_${browserName}_v${browserVersion}_${browserWidth}x${browserHeight}.png`);
+  };
+}
+
 exports.config = {
     //
     // ====================
@@ -80,7 +97,7 @@ exports.config = {
     // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
-    baseUrl: 'http://localhost',
+    baseUrl: 'https://sl:getin1@bayut-development.herokuapp.com/',
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 9999999,
@@ -114,7 +131,19 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['selenium-standalone'],
+    services: ['selenium-standalone', 'visual-regression'],
+
+    visualRegression: {
+        compare: new VisualRegressionCompare.LocalCompare({
+          referenceName: getScreenshotName(path.join(process.cwd(), 'screenshots/expectedRes')),
+          screenshotName: getScreenshotName(path.join(process.cwd(), 'screenshots/actualRes')),
+          diffName: getScreenshotName(path.join(process.cwd(), 'screenshots/diff')),
+          misMatchTolerance: 1.00,
+        }),
+        //viewportChangePause: 300,
+        //viewports: [/* { width: 320, height: 480 }, { width: 480, height: 320 },  */{ width: 1024, height: 768 }],
+        orientations: [/* 'landscape',  */'portrait'],
+    },
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
     // see also: http://webdriver.io/guide/testrunner/frameworks.html

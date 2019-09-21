@@ -2,6 +2,22 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
+# version: 2
+# jobs:
+#   build:
+#     docker:
+#       # specify the version you desire here
+#       - image: circleci/node:8.16.0-browsers
+#     steps:
+#       - checkout
+#       - run: npm install
+#       - run: npm test
+# workflows:
+#   version: 2
+#   build_and_test:
+#     jobs:
+#       - build
+
 version: 2
 jobs:
   build:
@@ -10,10 +26,30 @@ jobs:
       - image: circleci/node:8.16.0-browsers
     steps:
       - checkout
-      - run: npm install
-      - run: npm test
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
+      - run: 
+          name: update-npm
+          command: sudo npm install -g npm@latest
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm
+          command: npm install
+      - save_cache: 
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths: 
+            - ./node_modules
+      - run:
+          name: test
+          command: npm test
+      - store_artifacts: 
+          name: Saving screenshots as artifact
+          path: ./screenshots
+          prefix: tests
+      - store_artifacts: 
+          path: coverage
+          prefix: coverage
+      # - store_test_results:
+      #     path: ./screenshots
+        
+
+

@@ -1,0 +1,1 @@
+export BASE_URL = "https://sl:getin1@bayut-development.herokuapp.com"
